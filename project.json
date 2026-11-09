@@ -1,0 +1,17 @@
+{
+  "name": "retail-metric-contracts",
+  "title": "Retail Metric Contracts",
+  "source_collection": "KalyanM45/AI-Project-Gallery",
+  "source_entry_url": "https://github.com/KalyanM45/E-Commerce-Data-Analysis/blob/4a6ad249eac37497f817b15ed0d7cea184bdd206/README.md",
+  "skills": [
+    "SQL",
+    "retail analytics",
+    "production data quality",
+    "fulfillment"
+  ],
+  "problem": "Do the sales and fulfillment metrics agree once refunds, retries and cancellations are counted correctly?",
+  "limitations": "Five hundred fictional accepted orders have integer fixture times, integer-cent captures, partial refunds, deliveries, cancellations and repeated event payloads. The denominator includes accepted orders at or before the maturity cutoff; cancellations remain in that population. Completion means ever observed delivered by the as-of time, even if a later event cancels the order. It is not current operational status. Events after the as-of time are excluded. Empty populations produce null rates. This is not a financial reporting standard, revenue forecast or causal business lift.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "run_command": "python run.py --output runs/local",
+  "test_count": 11
+}

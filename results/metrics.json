@@ -1,0 +1,21 @@
+{
+  "as_of": 100,
+  "maturity_units": 5,
+  "accepted_cutoff": 95,
+  "event_grain": {
+    "denominator": 263,
+    "delivered": 219,
+    "completion_rate": 0.8326996197718631,
+    "captured_cents": 2144115,
+    "refunded_cents": 178638,
+    "net_cents": 1965477
+  },
+  "naive_join": {
+    "denominator": 678,
+    "delivered": 555,
+    "completion_rate": 0.8185840707964602,
+    "captured_cents": 5416350,
+    "refunded_cents": 446138,
+    "net_cents": 4970212
+  }
+}
