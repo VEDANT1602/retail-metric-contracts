@@ -1,28 +1,24 @@
 # Retail Metric Contracts
 
-**A dashboard can be mathematically correct and still count the wrong population.**
+Two orders, two captures, two refunds. Capture 100 cents on the first order and 50 on the second. Refund 20 and 10 cents from the first. The net is 120 cents. An extra copy of a payment or delivery event should leave both that total and the two-order denominator unchanged. The [hand-calculated test](tests/test_contracts.py#L34) turns this example into an assertion.
 
-I made the decision concrete: report completion for mature accepted orders and net captured cents as of one cutoff. Raw joins multiply payment retries, partial refunds and fulfillment events. My framework is **define population → deduplicate event identity → aggregate to order grain → join → audit denominators**.
+The [SQLite queries](core.py) first select orders mature at the observation cutoff, deduplicate events, and aggregate payments, refunds and fulfillment to one row per order. The comparison query joins the raw event tables at the same cutoff. Each additional matching event can multiply another table's rows.
 
-The implementation executes real SQLite queries against 500 original fictional orders. The comparator uses the same observation and maturity boundaries but directly joins the event tables. [The report](results/report.md) and one-row-per-order audit expose the difference rather than presenting a dashboard with unexplained totals.
+| Result on 500 fictional orders | One row per eligible order | Raw event join |
+| --- | ---: | ---: |
+| Count used as denominator | 263 | 678 |
+| Count marked delivered | 219 | 555 |
+| Net captured cents | 1,965,477 | 4,970,212 |
 
+The [order-level ledger](results/decisions.json) lets you reconcile the 1,965,477 cents. [Recorded totals and cutoff](results/metrics.json)
 
-## Recorded result
+## Run the reconciliation
 
-Of 500 fictional orders, **263** meet the maturity contract and **219** were observed delivered. Event-grain SQL reports **1,965,477 net cents**; the raw join reports **4,970,212** over **678 multiplied rows**. The order-level audit reconciles the corrected total. These are simulated cents and a declared operational metric.
-
-## Reproduce and inspect
-
-Python 3.11, CPU only. No API keys, paid services, provider calls, customer records or external data download.
+The queries run on the SQLite version bundled with Python 3.11.
 
 ```bash
-python -m venv .venv
-# Activate the environment for your shell.
-python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 python run.py --output runs/local
 ```
 
-`core.py` contains the generator and actual comparison. `data/dataset.json` is the committed original input. `results/decisions.json` preserves the evaluated rows/traces. `results/metrics.json` and `results/report.md` state the measured outcomes. `results/manifest.json` binds core source, input, and output bytes with SHA-256. A fresh run writes to the requested directory and leaves committed results available for comparison.
-
-This is a new independent portfolio experiment. Its results do not establish historical employer/client outcomes, production adoption, or service scale. Read the [data card](docs/data-card.md) and [provenance](docs/provenance.md) before interpreting the numbers.
+[Data card](docs/data-card.md) · [Run manifest](results/manifest.json) · [Source and contribution notes](docs/provenance.md)
